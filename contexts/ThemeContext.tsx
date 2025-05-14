@@ -9,7 +9,13 @@ type ThemeContextType = {
   toggleTheme: () => void
 }
 
-const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
+const defaultThemeContext: ThemeContextType = {
+  theme: 'light',
+  setTheme: () => {},
+  toggleTheme: () => {}
+}
+
+const ThemeContext = createContext<ThemeContextType>(defaultThemeContext)
 
 export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   const [mounted, setMounted] = useState(false)
@@ -74,8 +80,5 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
 // Hook personalizado para usar o contexto de tema
 export const useTheme = () => {
   const context = useContext(ThemeContext)
-  if (context === undefined) {
-    throw new Error('useTheme deve ser usado dentro de um ThemeProvider')
-  }
   return context
 } 

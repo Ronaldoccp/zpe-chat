@@ -1,11 +1,17 @@
 'use client'
 
 import { SUPPORTED_LANGUAGES, useLanguage } from '@/contexts/LanguageContext'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 const LanguageSwitcher = () => {
   const { currentLanguage, setLanguage, t } = useLanguage()
   const [isOpen, setIsOpen] = useState(false)
+  const [mounted, setMounted] = useState(false)
+  
+  // Garantir que renderização ocorra apenas no cliente
+  useEffect(() => {
+    setMounted(true)
+  }, [])
   
   // Encontrar o idioma atual para exibir sua bandeira
   const currentLangObj = SUPPORTED_LANGUAGES.find(lang => lang.code === currentLanguage)
@@ -15,6 +21,10 @@ const LanguageSwitcher = () => {
   const handleLanguageChange = (langCode: string) => {
     setLanguage(langCode)
     setIsOpen(false)
+  }
+  
+  if (!mounted) {
+    return null;
   }
   
   return (

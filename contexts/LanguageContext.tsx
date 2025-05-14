@@ -76,7 +76,17 @@ type LanguageContextType = {
   formatWithCulturalContext: (text: string) => string
 }
 
-const LanguageContext = createContext<LanguageContextType | undefined>(undefined)
+// Valores padrão para o contexto
+const defaultLanguageContext: LanguageContextType = {
+  currentLanguage: 'pt',
+  setLanguage: () => {},
+  t: (key) => key,
+  detectLanguage: async () => 'pt',
+  getGlossaryTerm: async (term) => term,
+  formatWithCulturalContext: (text) => text
+}
+
+const LanguageContext = createContext<LanguageContextType>(defaultLanguageContext)
 
 export const LanguageProvider = ({ children }: { children: React.ReactNode }) => {
   const [currentLanguage, setCurrentLanguage] = useState('pt')
@@ -162,8 +172,5 @@ export const LanguageProvider = ({ children }: { children: React.ReactNode }) =>
 // Hook personalizado para usar o contexto de idioma
 export const useLanguage = () => {
   const context = useContext(LanguageContext)
-  if (context === undefined) {
-    throw new Error('useLanguage deve ser usado dentro de um LanguageProvider')
-  }
   return context
 } 

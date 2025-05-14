@@ -2,10 +2,21 @@
 
 import { useLanguage } from '@/contexts/LanguageContext'
 import { useTheme } from '@/contexts/ThemeContext'
+import { useEffect, useState } from 'react'
 
 const ThemeSwitcher = () => {
   const { theme, toggleTheme } = useTheme()
   const { t } = useLanguage()
+  const [mounted, setMounted] = useState(false)
+
+  // Efeito para garantir renderização somente no cliente
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) {
+    return null
+  }
   
   return (
     <button

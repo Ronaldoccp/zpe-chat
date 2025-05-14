@@ -25,12 +25,19 @@ const VirtualAssistant = () => {
   const { theme } = useTheme()
   const [avatarType, setAvatarType] = useState<AvatarType>('default')
   const [speaking, setSpeaking] = useState(false)
+  const [mounted, setMounted] = useState(false)
+
+  // Garantir renderização apenas no cliente
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   // Atualizar avatar com base no idioma
   useEffect(() => {
+    if (!mounted) return;
     const newAvatarType = languageToAvatar[currentLanguage] || 'default'
     setAvatarType(newAvatarType)
-  }, [currentLanguage])
+  }, [currentLanguage, mounted])
 
   // Renderizar avatar apropriado
   const renderAvatar = () => {
@@ -57,6 +64,10 @@ const VirtualAssistant = () => {
   const simulateSpeaking = () => {
     setSpeaking(true)
     setTimeout(() => setSpeaking(false), 2000)
+  }
+
+  if (!mounted) {
+    return null;
   }
 
   return (
