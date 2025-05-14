@@ -1,6 +1,7 @@
 'use client'
 
 import { useLanguage } from '@/contexts/LanguageContext'
+import { callDeepSeekAPI, ChatMessage } from '@/lib/api'
 import { useEffect, useRef, useState } from 'react'
 
 interface AIAssistantProps {
@@ -18,7 +19,7 @@ const AIAssistant = ({ onClose, suggestions }: AIAssistantProps) => {
   }[]>([
     {
       id: 'welcome',
-      content: 'Olá! Sou seu assistente de IA. Como posso ajudar você hoje?',
+      content: 'Olá! Sou seu assistente de IA DeepSeek. Como posso ajudar você hoje?',
       sender: 'assistant',
       timestamp: new Date()
     }
@@ -38,41 +39,56 @@ const AIAssistant = ({ onClose, suggestions }: AIAssistantProps) => {
     inputRef.current?.focus()
   }, [])
 
-  // Simulação de processamento de mensagem
-  const processMessage = (message: string) => {
+  // Processar a mensagem usando a API do DeepSeek
+  const processMessage = async (message: string) => {
     setIsProcessing(true)
     
-    // Simulação de resposta da IA após um delay
-    setTimeout(() => {
-      let response = ''
+    try {
+      // Preparar o histórico de conversas para o formato necessário para a API
+      const chatHistory: ChatMessage[] = [
+        {
+          role: 'system',
+          content: 'Você é um assistente virtual multilíngue especializado em comércio exterior, aduanas e Zonas de Processamento de Exportação. Forneça respostas precisas, claras e concisas em português. Seja prestativo e profissional.'
+        }
+      ];
       
-      // Respostas simuladas baseadas em palavras-chave
-      if (message.toLowerCase().includes('documento') || message.toLowerCase().includes('documentos')) {
-        response = 'Posso ajudar com análise de documentos. Quer que eu verifique algum documento específico?'
-      } else if (message.toLowerCase().includes('processo') || message.toLowerCase().includes('fluxo')) {
-        response = 'Seu processo atual está em andamento. A etapa de revisão documental está prevista para ser concluída amanhã.'
-      } else if (message.toLowerCase().includes('export') || message.toLowerCase().includes('import')) {
-        response = 'Identificamos uma oportunidade de otimização no seu processo de exportação que pode reduzir o tempo em 15%.'
-      } else {
-        // Respostas genéricas quando não há palavras-chave
-        const genericResponses = [
-          'Entendi. Posso ajudar com análise de documentos, otimização de processos e alertas sobre mudanças regulatórias.',
-          'Analisei seus dados recentes e identifiquei algumas oportunidades de melhoria. Quer saber mais?',
-          'Baseado nos seus processos atuais, recomendo revisar os documentos de certificação de origem.',
-          'Detectei uma possível mudança na regulamentação que pode afetar seus processos. Quer que eu prepare um relatório?'
-        ]
-        response = genericResponses[Math.floor(Math.random() * genericResponses.length)]
-      }
+      // Adicionar o histórico de mensagens anteriores
+      messages.forEach(msg => {
+        chatHistory.push({
+          role: msg.sender === 'user' ? 'user' : 'assistant',
+          content: msg.content
+        });
+      });
       
+      // Adicionar a mensagem atual do usuário
+      chatHistory.push({
+        role: 'user',
+        content: message
+      });
+      
+      // Chamar a API do DeepSeek
+      const response = await callDeepSeekAPI(chatHistory);
+      
+      // Adicionar a resposta do assistente ao histórico de mensagens
       setMessages(prev => [...prev, {
         id: `ai-${Date.now()}`,
         content: response,
         sender: 'assistant',
         timestamp: new Date()
-      }])
+      }]);
+    } catch (error) {
+      console.error('Erro ao processar mensagem:', error);
       
-      setIsProcessing(false)
-    }, 1500)
+      // Em caso de erro, fornecer uma resposta de fallback
+      setMessages(prev => [...prev, {
+        id: `ai-${Date.now()}`,
+        content: 'Desculpe, estou enfrentando dificuldades para processar sua solicitação. Por favor, tente novamente mais tarde.',
+        sender: 'assistant',
+        timestamp: new Date()
+      }]);
+    } finally {
+      setIsProcessing(false);
+    }
   }
 
   // Enviar mensagem
@@ -117,7 +133,7 @@ const AIAssistant = ({ onClose, suggestions }: AIAssistantProps) => {
             </svg>
           </div>
           <div>
-            <h3 className="font-medium">Assistente IA</h3>
+            <h3 className="font-medium">DeepSeek AI</h3>
             <p className="text-xs text-green-500">Online</p>
           </div>
         </div>
