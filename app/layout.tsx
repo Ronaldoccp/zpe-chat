@@ -1,5 +1,5 @@
-import { LanguageProvider } from '@/contexts/LanguageContext'
-import { ThemeProvider } from '@/contexts/ThemeContext'
+import ClientLanguageProvider from '@/components/ClientLanguageProvider'
+import ClientThemeProvider from '@/components/ClientThemeProvider'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
@@ -19,11 +19,11 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" suppressHydrationWarning>
       <body className={`${inter.variable} font-sans`}>
-        <ThemeProvider>
-          <LanguageProvider>
+        <ClientThemeProvider>
+          <ClientLanguageProvider>
             {children}
-          </LanguageProvider>
-        </ThemeProvider>
+          </ClientLanguageProvider>
+        </ClientThemeProvider>
       </body>
     </html>
   )

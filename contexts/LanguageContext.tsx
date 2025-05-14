@@ -27,6 +27,13 @@ const resources = {
       chatPlaceholder: 'Digite sua mensagem...',
       send: 'Enviar',
       loading: 'Carregando...',
+      welcomeMessage: 'Olá! Sou o assistente virtual da ZPE. Como posso ajudar você hoje?',
+      systemTitle: 'Sistema de Atendimento Inteligente Multilíngue',
+      documents: 'Documentos',
+      knowledgeBase: 'Base de Conhecimento',
+      lightMode: 'Modo Claro',
+      darkMode: 'Modo Escuro',
+      virtualAssistant: 'Assistente Virtual',
     }
   },
   en: {
@@ -36,6 +43,13 @@ const resources = {
       chatPlaceholder: 'Type your message...',
       send: 'Send',
       loading: 'Loading...',
+      welcomeMessage: 'Hello! I am the ZPE virtual assistant. How can I help you today?',
+      systemTitle: 'Multilingual Intelligent Service System',
+      documents: 'Documents',
+      knowledgeBase: 'Knowledge Base',
+      lightMode: 'Light Mode',
+      darkMode: 'Dark Mode',
+      virtualAssistant: 'Virtual Assistant',
     }
   }
 }
@@ -73,7 +87,9 @@ export const LanguageProvider = ({ children }: { children: React.ReactNode }) =>
     i18next.changeLanguage(lang)
     setCurrentLanguage(lang)
     // Salvar preferência do usuário
-    localStorage.setItem('preferredLanguage', lang)
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('preferredLanguage', lang)
+    }
   }
 
   // Detecção automática de idioma (RF01.2)
@@ -114,6 +130,8 @@ export const LanguageProvider = ({ children }: { children: React.ReactNode }) =>
 
   // Carregar idioma preferido ao iniciar
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
     const savedLanguage = localStorage.getItem('preferredLanguage')
     if (savedLanguage) {
       setLanguage(savedLanguage)

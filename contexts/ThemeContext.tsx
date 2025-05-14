@@ -39,6 +39,8 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     setMounted(true)
     
+    if (typeof window === 'undefined') return;
+    
     // Verificar preferência salva
     const savedTheme = localStorage.getItem('theme')
     
